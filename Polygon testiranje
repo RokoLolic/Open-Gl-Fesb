@@ -1,0 +1,104 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using CsGL.OpenGL;
+
+namespace Vjezba1
+{
+    public class OurView : OpenGLControl
+    {
+        int angleX = 0;
+        int angleY = 0;
+        public OurView()
+        {
+            this.KeyDown += new KeyEventHandler(OurView_OnKeyDown);
+        }
+
+        protected void OurView_OnKeyDown(object Sender, KeyEventArgs kea)
+        {
+            if (kea.KeyCode == Keys.Escape)
+            {
+                Application.Exit();
+                Refresh();
+            }
+
+            if (kea.KeyCode == Keys.X)
+            {
+                angleX = angleX + 10;
+                Refresh();
+            }
+
+            if (kea.KeyCode == Keys.Y)
+            {
+                angleY = angleY + 10;
+                Refresh();
+            }
+        }
+
+        public override void glDraw()
+        {
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+            GL.glLoadIdentity();
+            GL.glTranslatef(0, 0, -6);
+
+            GL.glRotatef(angleX, 1, 0, 0);
+            GL.glRotatef(angleY, 0, 1, 0);
+
+            GL.glBegin(GL.GL_POLYGON);
+            /*GL.glColor3f(1.0f, 0.0f, 0.0f);
+            GL.glVertex3i(1, 1, 0);
+            GL.glColor3f(0.0f, 0.0f, 1.0f);
+            GL.glVertex3i(1, -1, 0);
+            GL.glVertex3i(-1, -1, 0);
+            GL.glColor3f(1.0f, 0.0f, 0.0f);
+            GL.glVertex3i(-1, 1, 0);
+            GL.glVertex3i(1, 1, 1);
+            GL.glVertex3i(1, -1, 1);*/
+
+            GL.glVertex3i(1, 1, 0);
+
+
+            GL.glEnd();
+        }
+
+        protected override void InitGLContext()
+        {
+            GL.glShadeModel(GL.GL_SMOOTH);
+            GL.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+            GL.glClearDepth(1.0f);
+            GL.glEnable(GL.GL_DEPTH_TEST);
+            GL.glDepthFunc(GL.GL_LEQUAL);
+            GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+
+            Size s = this.Size;
+            GL.glMatrixMode(GL.GL_PROJECTION);
+            GL.glLoadIdentity();
+            GL.gluPerspective(45f, (double)s.Width / (double)s.Height, 0.1f, 100.0f);
+            GL.glMatrixMode(GL.GL_MODELVIEW);
+
+            //GL.glColor3i(100, 2, 3);
+
+        }
+    }
+
+    public class MainForm : Form
+    {
+        private OurView view;
+
+        public MainForm()
+        {
+            this.AutoScaleBaseSize = new Size(5, 13);
+            this.ClientSize = new Size(500, 500);
+            this.Name = "MainForm";
+            this.Text = "Vjezba1";
+            this.view = new OurView();
+            this.view.Parent = this;
+            this.view.Dock = DockStyle.Fill;
+        }
+
+        static void Main()
+        {
+            Application.Run(new MainForm());
+        }
+    }
+}
